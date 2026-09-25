@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyMate - Database Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --surface-hover: #334155;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #8b5cf6;
+            --badge-green: #10b981;
+            --badge-blue: #0ea5e9;
+            --badge-purple: #a855f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .actions-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-color);
+            color: var(--text-main);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--surface-hover);
+            border-color: #475569;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Stats bar */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 16px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active {
+            color: #60a5fa;
+            border-bottom: 2px solid #3b82f6;
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .tab-count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 7px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        /* Table Card */
+        .table-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-toolbar {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.4);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 13px;
+            width: 300px;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 580px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #172133;
+            color: #94a3b8;
+            font-weight: 600;
+            padding: 12px 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            color: #cbd5e1;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .code-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+
+        .text-preview {
+            max-width: 480px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .view-btn {
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .view-btn:hover {
+            background: rgba(59, 130, 246, 0.25);
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .pill-blue { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
+        .pill-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+        .pill-green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--text-muted);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 24px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: #e2e8f0;
+            background: #0b1120;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="title-group">
+            <span class="badge-tag">SQL & Vector DB</span>
+            <h1>Database Explorer</h1>
+        </div>
+        <div class="actions-group">
+            <a href="/" class="btn">← Back to StudyMate Chat</a>
+            <button onclick="window.location.reload()" class="btn btn-primary">↻ Refresh Data</button>
+        </div>
+    </header>
+
+    <!-- Stats row -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">SQLite: Chat Messages</span>
+            <div class="stat-value">{{ messages|length }}</div>
+            <span class="stat-sub">Stored in <code>chat_history.db</code> &gt; <code>messages</code></span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">SQLite: Uploaded Documents</span>
+            <div class="stat-value">{{ documents|length }}</div>
+            <span class="stat-sub">Stored in <code>chat_history.db</code> &gt; <code>documents</code></span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Vector DB: Chroma Embeddings</span>
+            <div class="stat-value">{{ chroma_chunks|length }}</div>
+            <span class="stat-sub">Collection: <code>studymate_docs</code> (384-dim vectors)</span>
+        </div>
+    </div>
+
+    <!-- Tabs selector -->
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('tab-messages', this)">
+            💬 messages (SQLite)
+            <span class="tab-count">{{ messages|length }}</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-documents', this)">
+            📄 documents (SQLite)
+            <span class="tab-count">{{ documents|length }}</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-chroma', this)">
+            🧠 studymate_docs (Vector DB)
+            <span class="tab-count">{{ chroma_chunks|length }}</span>
+        </button>
+    </div>
+
+    <!-- TAB 1: SQLite Messages -->
+    <div id="tab-messages" class="tab-content">
+        <div class="table-card">
+            <div class="table-toolbar">
+                <input type="text" class="search-box" placeholder="Filter messages..." onkeyup="filterTable('tab-messages-table', this.value)">
+                <span class="pill pill-blue">SQLite Table: messages</span>
+            </div>
+            <div class="table-responsive">
+                <table id="tab-messages-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">ID</th>
+                            <th style="width: 170px;">Timestamp</th>
+                            <th>User Message</th>
+                            <th>Bot Reply</th>
+                            <th style="width: 90px; text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in messages %}
+                        <tr>
+                            <td class="code-cell">#{{ msg.id }}</td>
+                            <td class="code-cell" style="color: #94a3b8;">{{ msg.timestamp }}</td>
+                            <td><strong style="color: #60a5fa;">{{ msg.user_message }}</strong></td>
+                            <td><span class="text-preview">{{ msg.bot_reply }}</span></td>
+                            <td style="text-align: right;">
+                                <button class="view-btn" onclick="openModal('Message #{{ msg.id }} Details', {{ msg|tojson|forceescape }})">View</button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-state">No chat messages found in SQLite.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: SQLite Documents -->
+    <div id="tab-documents" class="tab-content" style="display: none;">
+        <div class="table-card">
+            <div class="table-toolbar">
+                <input type="text" class="search-box" placeholder="Filter documents..." onkeyup="filterTable('tab-documents-table', this.value)">
+                <span class="pill pill-purple">SQLite Table: documents</span>
+            </div>
+            <div class="table-responsive">
+                <table id="tab-documents-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">ID</th>
+                            <th>Filename</th>
+                            <th style="width: 170px;">Uploaded At</th>
+                            <th style="width: 120px;">Content Size</th>
+                            <th>Preview</th>
+                            <th style="width: 110px; text-align: right;">Full Content</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td class="code-cell">#{{ doc.id }}</td>
+                            <td><strong style="color: #c084fc;">{{ doc.filename }}</strong></td>
+                            <td class="code-cell" style="color: #94a3b8;">{{ doc.uploaded_at }}</td>
+                            <td><span class="pill pill-green">{{ "{:,}".format(doc.content_length) }} chars</span></td>
+                            <td><span class="text-preview">{{ doc.content[:140] }}...</span></td>
+                            <td style="text-align: right;">
+                                <button class="view-btn" onclick="openModal('Document: {{ doc.filename }}', {{ doc.content|tojson|forceescape }})">Read Full</button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-state">No documents stored in SQLite yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Chroma Vector DB -->
+    <div id="tab-chroma" class="tab-content" style="display: none;">
+        <div class="table-card">
+            <div class="table-toolbar">
+                <input type="text" class="search-box" placeholder="Filter vector chunks..." onkeyup="filterTable('tab-chroma-table', this.value)">
+                <span class="pill pill-green">ChromaDB Collection: studymate_docs</span>
+            </div>
+            <div class="table-responsive">
+                <table id="tab-chroma-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th style="width: 220px;">Chunk ID</th>
+                            <th style="width: 200px;">Doc Source</th>
+                            <th style="width: 100px;">Length</th>
+                            <th>Chunk Text</th>
+                            <th style="width: 90px; text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for chunk in chroma_chunks %}
+                        <tr>
+                            <td class="code-cell">{{ loop.index }}</td>
+                            <td class="code-cell" style="color: #38bdf8;">{{ chunk.id }}</td>
+                            <td><span class="pill pill-blue">{{ chunk.doc_id }}</span></td>
+                            <td class="code-cell">{{ chunk.length }} chars</td>
+                            <td><span class="text-preview">{{ chunk.text }}</span></td>
+                            <td style="text-align: right;">
+                                <button class="view-btn" onclick="openModal('Vector Chunk: {{ chunk.id }}', {{ chunk.text|tojson|forceescape }})">View</button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-state">No vector chunks indexed in ChromaDB.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for viewing full content -->
+<div class="modal-overlay" id="content-modal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-title">Details</div>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).style.display = 'block';
+        btn.classList.add('active');
+    }
+
+    function filterTable(tableId, query) {
+        const q = query.toLowerCase();
+        const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(q) ? '' : 'none';
+        });
+    }
+
+    function openModal(title, content) {
+        document.getElementById('modal-title').innerText = title;
+        if (typeof content === 'object') {
+            document.getElementById('modal-body').innerText = JSON.stringify(content, null, 2);
+        } else {
+            document.getElementById('modal-body').innerText = content;
+        }
+        document.getElementById('content-modal').classList.add('open');
+    }
+
+    function closeModal(e) {
+        document.getElementById('content-modal').classList.remove('open');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+</script>
+
+</body>
+</html>
