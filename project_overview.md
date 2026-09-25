@@ -83,16 +83,6 @@ StudyMate/
 └── README.md               # Quickstart guide
 ```
 
-### Role of Each Core Python File
-
-| File | Primary Responsibility |
-|---|---|
-| [`app/main.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/main.py) | **The Web Controller:** Defines endpoints (`/`, `/upload`, `/chat`, `/clear`), parses file uploads, and coordinates between `database.py`, `rag.py`, and `llm.py`. |
-| [`app/rag.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/rag.py) | **The Search Engine:** Extracts PDF text, splits it into overlapping 250-word chunks, calculates vector embeddings with `FastEmbed`, and queries `ChromaDB`. |
-| [`app/llm.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/llm.py) | **The AI Communicator:** Connects to Groq using the OpenAI SDK, injects retrieved document context into system prompts, and enforces fast, concise tutor answers. |
-| [`app/database.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/database.py) | **The History Logger:** Manages the SQLite database `chat_history.db`. Saves messages, loads previous chat messages upon page refresh, and clears history on demand. |
-
----
 
 ## 📚 Important Libraries & Their Exact Use Cases
 
@@ -131,7 +121,7 @@ Every library in this project was selected for a specific purpose:
 
 ### 6. `jinja2`
 - **What it is:** The standard templating engine for Python.
-- **Why we use it:** Renders [`templates/index.html`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/templates/index.html) on the server, injecting existing chat history from SQLite directly into the page when you first load the website.
+- **Why we use it:** Renders [`templates/index.html`] on the server, injecting existing chat history from SQLite directly into the page when you first load the website.
 
 ### 7. `python-multipart`
 - **What it is:** A streaming multipart parser for Python.
@@ -310,11 +300,11 @@ GROQ_API_KEY=gsk_your_groq_api_key_here
 
 | File | Parameter | Description |
 |---|---|---|
-| [`app/rag.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/rag.py) | `chunk_size=250` | Number of words per chunk. Larger chunks retain more context; smaller chunks are more precise. |
-| [`app/rag.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/rag.py) | `overlap=20` | Word overlap between chunks to prevent chopped thoughts. |
-| [`app/rag.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/rag.py) | `threshold=1.8` | Distance limit for ChromaDB matches. Lowering this makes filtering stricter. |
-| [`app/llm.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/llm.py) | `model="openai/gpt-oss-20b"` | Groq model name. Can be changed to `llama-3.3-70b-versatile` or `mixtral-8x7b-32768`. |
-| [`app/llm.py`](file:///Users/bilalhaider/Desktop/work/work/studymate-main/app/llm.py) | `max_tokens=220` | Output length cap to keep answers short and focused. |
+| [`app/rag.py`] | `chunk_size=250` | Number of words per chunk. Larger chunks retain more context; smaller chunks are more precise. |
+| [`app/rag.py`] | `overlap=20` | Word overlap between chunks to prevent chopped thoughts. |
+| [`app/rag.py`] | `threshold=1.8` | Distance limit for ChromaDB matches. Lowering this makes filtering stricter. |
+| [`app/llm.py`] | `model="openai/gpt-oss-20b"` | Groq model name. Can be changed to `llama-3.3-70b-versatile` or `mixtral-8x7b-32768`. |
+| [`app/llm.py`] | `max_tokens=220` | Output length cap to keep answers short and focused. |
 
 ---
 *Created for StudyMate — simple, fast, and grounded study assistance.*

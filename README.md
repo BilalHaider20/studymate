@@ -106,7 +106,3 @@ StudyMate/
 ## Contributing
 
 Contributions are welcome. Please open an issue to discuss what you'd like to change, then submit a pull request.
-
-## License
-
-Add your license here (e.g. MIT).
